@@ -20,12 +20,19 @@ import org.apache.dubbo.demo.DemoService;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 public class Application {
     public static void main(String[] args) {
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring/dubbo-consumer.xml");
         context.start();
         DemoService demoService = context.getBean("demoService", DemoService.class);
-        String hello = demoService.sayHello("world");
-        System.out.println("result: " + hello);
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(50, 100, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+        for (int i = 0; i< 100; i++) {
+            executor.submit(() -> demoService.sayHello("world"));
+        }
+        System.out.println("done");
     }
 }
