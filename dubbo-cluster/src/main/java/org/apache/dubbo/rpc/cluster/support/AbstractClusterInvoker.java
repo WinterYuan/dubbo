@@ -153,9 +153,10 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
         if (CollectionUtils.isEmpty(invokers)) {
             return null;
         }
-        if (invokers.size() == 1) {
-            return invokers.get(0);
-        }
+        // todo test
+//        if (invokers.size() == 1) {
+//            return invokers.get(0);
+//        }
         Invoker<T> invoker = loadbalance.select(invokers, getUrl(), invocation);
 
         //If the `invoker` is in the  `selected` or invoker is unavailable && availablecheck is true, reselect.
