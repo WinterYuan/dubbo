@@ -27,4 +27,5 @@
 
     <dubbo:reference id="demoService" check="false" interface="org.apache.dubbo.demo.DemoService"/>
 
+    <dubbo:provider proxy="cglib" />
 </beans>
