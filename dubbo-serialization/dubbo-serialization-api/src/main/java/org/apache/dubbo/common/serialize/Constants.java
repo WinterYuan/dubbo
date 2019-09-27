@@ -29,5 +29,6 @@ public interface Constants {
     byte PROTOSTUFF_SERIALIZATION_ID = 12;
     byte AVRO_SERIALIZATION_ID = 11;
     byte GSON_SERIALIZATION_ID = 16;
+    byte JACKSON_SERIALIZATION_ID = 17;
     byte PROTOBUF_JSON_SERIALIZATION_ID = 21;
 }
