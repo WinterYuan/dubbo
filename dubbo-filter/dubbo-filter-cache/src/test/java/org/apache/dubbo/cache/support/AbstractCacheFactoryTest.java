@@ -24,7 +24,7 @@ import org.apache.dubbo.rpc.RpcInvocation;
 public abstract class AbstractCacheFactoryTest {
 
     protected Cache constructCache() {
-        URL url = URL.valueOf("test://test:11/test?cache=lru");
+        URL url = URL.valueOf("test://test:11/test?cache=caffeine");
         Invocation invocation = new RpcInvocation();
         return getCacheFactory().getCache(url, invocation);
     }
