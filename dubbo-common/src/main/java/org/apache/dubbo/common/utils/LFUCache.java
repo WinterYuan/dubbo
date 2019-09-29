@@ -7,14 +7,14 @@ import java.util.Objects;
 
 public class LFUCache {
     private HashMap<Object, Node> kvMap;
-    private HashMap<Integer, LinkedHashSet<Node>> frequenceMap;
+    private HashMap<Object, LinkedHashSet<Node>> frequencyMap;
     private int minFrequency;
     private int capacity;
 
     public LFUCache(int capacity) {
         this.capacity = capacity;
         kvMap = new HashMap<>();
-        frequenceMap = new HashMap<>();
+        frequencyMap = new HashMap<>();
         minFrequency = 1;
     }
 
@@ -33,45 +33,49 @@ public class LFUCache {
             return;
         }
         if (kvMap.containsKey(key)) {
-            updateNode(kvMap.get(key));
+            Node node = kvMap.get(key);
+            if (node.value != value) {
+                node.value = value;
+            }
+            updateNode(node);
             return;
         } else {
             Node node = new Node(key, value, 1);
-            if (!frequenceMap.containsKey(node.frequency)) {
+            if (!frequencyMap.containsKey(node.frequency)) {
                 LinkedHashSet<Node> newLink = new LinkedHashSet<>();
                 newLink.add(node);
-                frequenceMap.put(node.frequency, newLink);
+                frequencyMap.put(node.frequency, newLink);
             } else {
-                LinkedHashSet<Node> newLink = frequenceMap.get(node.frequency);
+                LinkedHashSet<Node> newLink = frequencyMap.get(node.frequency);
                 newLink.add(node);
-                frequenceMap.put(node.frequency, newLink);
+                frequencyMap.put(node.frequency, newLink);
             }
             kvMap.put(key, node);
-            minFrequency = 1;
         }
         if (kvMap.size() > capacity) {
-            LinkedHashSet<Node> minFrequencyList = frequenceMap.get(minFrequency);
-            Node toRemoveNode = minFrequencyList.iterator().next();
-            minFrequencyList.remove(toRemoveNode);
-            kvMap.remove(toRemoveNode.key);
+            LinkedHashSet<Node> minFrequencyList = frequencyMap.get(minFrequency);
+            Node evict = minFrequencyList.iterator().next();
+            minFrequencyList.remove(evict);
+            kvMap.remove(evict.key);
         }
+        minFrequency = 1;
     }
 
     private void updateNode(Node node) {
-        LinkedHashSet currentLink = frequenceMap.get(node.frequency);
+        LinkedHashSet<Node> currentLink = frequencyMap.get(node.frequency);
         currentLink.remove(node);
         if (currentLink.isEmpty() && node.frequency == minFrequency) {
             minFrequency++;
         }
         node.frequency++;
-        if (frequenceMap.containsKey(node.frequency)) {
-            LinkedHashSet<Node> nextLink = frequenceMap.get(node.frequency);
+        if (frequencyMap.containsKey(node.frequency)) {
+            LinkedHashSet<Node> nextLink = frequencyMap.get(node.frequency);
             nextLink.add(node);
-            frequenceMap.put(node.frequency, nextLink);
+            frequencyMap.put(node.frequency, nextLink);
         } else {
             LinkedHashSet<Node> nextLink = new LinkedHashSet<>();
             nextLink.add(node);
-            frequenceMap.put(node.frequency, nextLink);
+            frequencyMap.put(node.frequency, nextLink);
         }
     }
 
@@ -95,14 +99,12 @@ public class LFUCache {
                 return false;
             }
             Node node = (Node) o;
-            return frequency == node.frequency &&
-                    value.equals(node.value) && key.equals(node.key);
+            return key.equals(node.key);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(key, value, frequency);
+            return Objects.hash(key);
         }
-
     }
 }
